@@ -40,12 +40,26 @@
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             font-size: 1.1rem;
         }
 
-        .form-group {
+        .usage-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
             margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .usage-display.locked {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
         }
 
         label {
@@ -99,7 +113,7 @@
         }
 
         .output {
-            margin-top: 40px;
+            margin-top: 30px;
             display: none;
         }
 
@@ -148,6 +162,104 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .locked-screen {
+            display: none;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .locked-screen.show {
+            display: block;
+        }
+
+        .locked-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .locked-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .locked-message {
+            color: #856404;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .payment-details {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .payment-details h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .upi-id {
+            background: #e0e0e0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: inline-block;
+            margin: 15px 0;
+            user-select: all;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .whatsapp-btn:hover {
+            background: #20bd5a;
+        }
+
+        .unlock-section {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+
+        .unlock-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        .unlock-btn {
+            background: #28a745;
+            padding: 12px 25px;
+        }
+
+        .unlock-btn:hover {
+            background: #218838;
         }
 
         .error {
@@ -208,6 +320,10 @@
             .features {
                 grid-template-columns: 1fr;
             }
+
+            .locked-icon {
+                font-size: 3rem;
+            }
         }
     </style>
 </head>
@@ -216,17 +332,68 @@
         <h1>🎬 Indian UGC Ad Generator</h1>
         <p class="subtitle">AI-powered Hinglish ad scripts for Instagram Reels & TikTok</p>
 
-        <div class="form-group">
-            <label for="product">Enter Product Name:</label>
-            <input
-                type="text"
-                id="product"
-                placeholder="e.g., Face wash, Protein powder, skincare..."
-                autocomplete="off"
-            >
+        <!-- Usage Display -->
+        <div class="usage-display" id="usageDisplay">
+            <span id="usageText">Loading...</span>
         </div>
 
-        <button id="generateBtn" onclick="generateAd()">Generate Ad Script ✨</button>
+        <!-- Locked Screen -->
+        <div class="locked-screen" id="lockedScreen">
+            <div class="locked-icon">🔒</div>
+            <div class="locked-title">Free Limit Reached!</div>
+            <div class="locked-message">
+                You've used your 2 free generations. Upgrade to unlock unlimited access!
+            </div>
+
+            <div class="payment-details">
+                <h3>💳 Payment Details</h3>
+                <p>Amount: <strong>₹199</strong> for unlimited access</p>
+                <p style="margin-top: 10px;">UPI ID:</p>
+                <div class="upi-id" id="upiId">8638556847-3@ybl</div>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    Send payment, then send screenshot on WhatsApp for unlock
+                </p>
+                <a href="https://wa.me/919876543210?text=Hi%2C%20I%20sent%20payment%20for%20UGC%20Ad%20Generator%20unlock.%20Here%27s%20my%20screenshot%3A"
+                   class="whatsapp-btn" target="_blank">
+                    📱 Confirm Payment on WhatsApp
+                </a>
+            </div>
+
+            <div class="unlock-section">
+                <h3>🔓 Already Paid? Enter Unlock Code</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">
+                    Enter the code sent by admin to unlock your account
+                </p>
+                <input type="text" id="unlockCode" class="unlock-input" placeholder="Enter unlock code">
+                <button class="unlock-btn" onclick="unlockAccount()">🔓 Unlock Account</button>
+                <p id="unlockMessage" style="margin-top: 10px; font-size: 0.9rem;"></p>
+            </div>
+        </div>
+
+        <!-- Main Form (Hidden when locked) -->
+        <div id="mainForm">
+            <div class="form-group">
+                <label for="phone">WhatsApp Number (for tracking):</label>
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="Enter your WhatsApp number"
+                    autocomplete="tel"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="product">Enter Product Name:</label>
+                <input
+                    type="text"
+                    id="product"
+                    placeholder="e.g., Face wash, Protein powder, skincare..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <button id="generateBtn" onclick="generateAd()">Generate Ad Script ✨</button>
+        </div>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
@@ -260,7 +427,91 @@
     </div>
 
     <script>
+        // Constants
+        const FREE_LIMIT = 2;
+        const ADMIN_UNLOCK_CODES = ['UGC2024', 'PREMIUM123', 'UNLOCK2024'];
+        const UPI_ID = '8638556847-3@ybl';
+
+        // State
+        let userData = {
+            phone: '',
+            usageCount: 0,
+            isPremium: false
+        };
+
+        // Load user data from localStorage
+        function loadUserData() {
+            const saved = localStorage.getItem('ugc_ad_generator_user');
+            if (saved) {
+                userData = JSON.parse(saved);
+                document.getElementById('phone').value = userData.phone || '';
+            }
+            updateUI();
+        }
+
+        // Save user data to localStorage
+        function saveUserData() {
+            localStorage.setItem('ugc_ad_generator_user', JSON.stringify(userData));
+        }
+
+        // Update UI based on current state
+        function updateUI() {
+            const usageDisplay = document.getElementById('usageDisplay');
+            const lockedScreen = document.getElementById('lockedScreen');
+            const mainForm = document.getElementById('mainForm');
+            const usageText = document.getElementById('usageText');
+
+            if (userData.isPremium) {
+                usageDisplay.classList.remove('locked');
+                usageText.textContent = '✅ Premium Member - Unlimited Access';
+                lockedScreen.classList.remove('show');
+                mainForm.style.display = 'block';
+            } else if (userData.usageCount >= FREE_LIMIT) {
+                usageDisplay.classList.add('locked');
+                usageText.textContent = `🔒 Free limit reached (${userData.usageCount}/${FREE_LIMIT})`;
+                lockedScreen.classList.add('show');
+                mainForm.style.display = 'none';
+            } else {
+                usageDisplay.classList.remove('locked');
+                usageText.textContent = `🆓 Free uses left: ${FREE_LIMIT - userData.usageCount}/${FREE_LIMIT}`;
+                lockedScreen.classList.remove('show');
+                mainForm.style.display = 'block';
+            }
+        }
+
+        // Increment usage count
+        function incrementUsage() {
+            if (userData.isPremium) return;
+
+            userData.usageCount++;
+            saveUserData();
+            updateUI();
+        }
+
+        // Unlock account with code
+        function unlockAccount() {
+            const code = document.getElementById('unlockCode').value.trim().toUpperCase();
+            const message = document.getElementById('unlockMessage');
+
+            if (ADMIN_UNLOCK_CODES.includes(code)) {
+                userData.isPremium = true;
+                userData.usageCount = 0;
+                saveUserData();
+                updateUI();
+                message.textContent = '✅ Account unlocked! Enjoy unlimited access!';
+                message.style.color = '#28a745';
+                setTimeout(() => {
+                    message.textContent = '';
+                    document.getElementById('unlockCode').value = '';
+                }, 3000);
+            } else {
+                message.textContent = '❌ Invalid unlock code. Please contact admin.';
+                message.style.color = '#dc3545';
+            }
+        }
+
         async function generateAd() {
+            const phone = document.getElementById('phone').value.trim();
             const product = document.getElementById('product').value.trim();
             const generateBtn = document.getElementById('generateBtn');
             const loading = document.getElementById('loading');
@@ -277,6 +528,19 @@
                 error.textContent = '❌ Please enter a product name';
                 error.classList.add('show');
                 return;
+            }
+
+            if (!userData.isPremium && userData.usageCount >= FREE_LIMIT) {
+                error.textContent = '❌ Free limit reached. Please upgrade to continue.';
+                error.classList.add('show');
+                updateUI();
+                return;
+            }
+
+            // Update phone number if provided
+            if (phone) {
+                userData.phone = phone;
+                saveUserData();
             }
 
             // Show loading state
@@ -303,6 +567,9 @@
                 script.textContent = data.script;
                 output.classList.add('show');
 
+                // Increment usage
+                incrementUsage();
+
             } catch (err) {
                 error.textContent = `❌ Error: ${err.message}`;
                 error.classList.add('show');
@@ -313,6 +580,9 @@
                 loading.classList.remove('show');
             }
         }
+
+        // Initialize on page load
+        loadUserData();
 
         // Allow Enter key to trigger generation
         document.getElementById('product').addEventListener('keypress', function(e) {
