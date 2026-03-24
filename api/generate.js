@@ -12,8 +12,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    // HuggingFace API endpoint
-    const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1';
+    // HuggingFace API endpoint (NEW: using router instead of api-inference)
+    const HF_API_URL = 'https://router.huggingface.co/huggingface-projects/llama-3.2-3b-instruct/v1/chat/completions';
 
     // Get API key from environment variable
     const HF_API_KEY = process.env.HF_API_KEY;
@@ -33,7 +33,7 @@ CTA: [3-5 seconds call to action]
 
 Use natural Hinglish (Hindi + English mix) with appropriate emojis. Keep it conversational and energetic.`;
 
-    // Call HuggingFace API
+    // Call HuggingFace Router API (OpenAI-compatible format)
     const hfResponse = await fetch(HF_API_URL, {
       method: 'POST',
       headers: {
@@ -41,14 +41,19 @@ Use natural Hinglish (Hindi + English mix) with appropriate emojis. Keep it conv
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 300,
-          temperature: 0.7,
-          top_p: 0.95,
-          do_sample: true,
-          return_full_text: false,
-        },
+        model: 'huggingface-projects/llama-3.2-3b-instruct',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert Indian ad copywriter who creates engaging Hinglish scripts for Instagram Reels and TikTok.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 300,
+        temperature: 0.7,
       }),
     });
 
@@ -60,8 +65,15 @@ Use natural Hinglish (Hindi + English mix) with appropriate emojis. Keep it conv
 
     const data = await hfResponse.json();
 
-    // Extract generated text
-    let generatedText = data[0]?.generated_text || '';
+    // Extract generated text (OpenAI-compatible format)
+    let generatedText = '';
+
+    if (data.choices && data.choices.length > 0) {
+      generatedText = data.choices[0].message.content;
+    } else if (Array.isArray(data) && data.length > 0) {
+      // Fallback for old format
+      generatedText = data[0]?.generated_text || '';
+    }
 
     // Clean up the response
     generatedText = generatedText.trim();
