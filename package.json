@@ -1,0 +1,13 @@
+{
+  "name": "indian-ugc-ad-generator",
+  "version": "1.0.0",
+  "description": "Lightweight SaaS for generating Indian UGC ad scripts",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

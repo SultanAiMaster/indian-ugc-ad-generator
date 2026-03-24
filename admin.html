@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Indian UGC Ad Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #00d4ff;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00d4ff 0%, #00a0c9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+        }
+
+        button.danger:hover {
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        button.success {
+            background: linear-gradient(135deg, #28a745 0%, #20bd5a 100%);
+        }
+
+        button.success:hover {
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge.premium {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .badge.free {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .notification {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+        }
+
+        .notification.error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+        }
+
+        .code-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Admin Panel</h1>
+            <p>Indian UGC Ad Generator - Management Dashboard</p>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <!-- Statistics -->
+        <div class="card">
+            <h2>📊 Overall Statistics</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalGenerations">0</div>
+                    <div class="stat-label">Total Generations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="premiumUsers">0</div>
+                    <div class="stat-label">Premium Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="revenue">₹0</div>
+                    <div class="stat-label">Estimated Revenue</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate Unlock Codes -->
+        <div class="card">
+            <h2>🔑 Generate Unlock Codes</h2>
+            <div class="form-group">
+                <button class="success" onclick="generateUnlockCode()">Generate New Unlock Code</button>
+            </div>
+            <div id="newCodeDisplay" style="display: none;">
+                <p style="margin-bottom: 10px; color: #aaa;">Share this code with the user:</p>
+                <div class="code-display" id="newCode"></div>
+                <button style="margin-top: 15px;" onclick="copyCode()">📋 Copy Code</button>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="card">
+            <h2>👥 User Management</h2>
+            <div class="form-group">
+                <label>Search User (Phone Number):</label>
+                <input type="tel" id="searchPhone" placeholder="Enter phone number to search...">
+                <button style="margin-top: 10px;" onclick="searchUser()">🔍 Search User</button>
+            </div>
+            <div id="userActions" style="display: none; margin-top: 20px;">
+                <h3 style="margin-bottom: 15px;">User Details:</h3>
+                <div id="userInfo"></div>
+                <div style="margin-top: 15px;">
+                    <button class="success" onclick="upgradeUser()">💎 Upgrade to Premium</button>
+                    <button class="danger" onclick="resetUserUsage()">🔄 Reset Usage</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Users List -->
+        <div class="card">
+            <h2>📋 All Users</h2>
+            <button onclick="loadAllUsers()">🔄 Refresh List</button>
+            <div style="overflow-x: auto; margin-top: 20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phone</th>
+                            <th>Usage Count</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #aaa;">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Admin Settings -->
+        <div class="card">
+            <h2>⚙️ Admin Settings</h2>
+            <div class="form-group">
+                <label>Free Usage Limit:</label>
+                <input type="number" id="freeLimit" value="2" min="1" max="10">
+            </div>
+            <div class="form-group">
+                <label>UPI ID:</label>
+                <input type="text" id="upiId" value="8638556847-3@ybl">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp Number:</label>
+                <input type="tel" id="whatsappNumber" value="919876543210">
+            </div>
+            <button onclick="saveSettings()">💾 Save Settings</button>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <button onclick="window.location.href='/'">🏠 Back to Home</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const ADMIN_PASSWORD = 'admin123';
+        const PAID_PRICE = 199;
+        let currentUserData = null;
+
+        // Check admin authentication
+        function checkAuth() {
+            const isAdmin = localStorage.getItem('ugc_ad_admin_authenticated');
+            if (!isAdmin) {
+                const password = prompt('🔐 Enter Admin Password:');
+                if (password === ADMIN_PASSWORD) {
+                    localStorage.setItem('ugc_ad_admin_authenticated', 'true');
+                } else {
+                    alert('❌ Invalid password! Redirecting...');
+                    window.location.href = '/';
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Load all users from localStorage (simulated database)
+        function loadAllUsers() {
+            const allUsers = [];
+            const allKeys = Object.keys(localStorage);
+
+            allKeys.forEach(key => {
+                if (key.startsWith('ugc_ad_generator_user_') || key === 'ugc_ad_generator_user') {
+                    const userData = JSON.parse(localStorage.getItem(key));
+                    allUsers.push({
+                        phone: userData.phone || 'Anonymous',
+                        usageCount: userData.usageCount || 0,
+                        isPremium: userData.isPremium || false,
+                        key: key
+                    });
+                }
+            });
+
+            updateUsersTable(allUsers);
+            updateStatistics(allUsers);
+        }
+
+        // Update users table
+        function updateUsersTable(users) {
+            const tbody = document.getElementById('usersTable');
+
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #aaa;">
+                            No users found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.phone}</td>
+                    <td>${user.usageCount}</td>
+                    <td>
+                        <span class="badge ${user.isPremium ? 'premium' : 'free'}">
+                            ${user.isPremium ? 'Premium' : 'Free'}
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="manageUser('${user.key}')" style="padding: 6px 12px; font-size: 0.85rem;">
+                            ⚙️ Manage
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update statistics
+        function updateStatistics(users) {
+            const totalUsers = users.length;
+            const totalGenerations = users.reduce((sum, user) => sum + user.usageCount, 0);
+            const premiumUsers = users.filter(user => user.isPremium).length;
+            const revenue = premiumUsers * PAID_PRICE;
+
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('totalGenerations').textContent = totalGenerations;
+            document.getElementById('premiumUsers').textContent = premiumUsers;
+            document.getElementById('revenue').textContent = `₹${revenue}`;
+        }
+
+        // Search user by phone
+        function searchUser() {
+            const phone = document.getElementById('searchPhone').value.trim();
+            const allUsers = [];
+            const allKeys = Object.keys(localStorage);
+
+            allKeys.forEach(key => {
+                if (key.startsWith('ugc_ad_generator_user_') || key === 'ugc_ad_generator_user') {
+                    const userData = JSON.parse(localStorage.getItem(key));
+                    if (userData.phone === phone) {
+                        allUsers.push({
+                            ...userData,
+                            key: key
+                        });
+                    }
+                }
+            });
+
+            if (allUsers.length === 0) {
+                showNotification('User not found!', 'error');
+                document.getElementById('userActions').style.display = 'none';
+                return;
+            }
+
+            currentUserData = allUsers[0];
+            displayUserInfo(currentUserData);
+        }
+
+        // Display user info
+        function displayUserInfo(user) {
+            document.getElementById('userInfo').innerHTML = `
+                <p><strong>Phone:</strong> ${user.phone || 'Not provided'}</p>
+                <p><strong>Usage Count:</strong> ${user.usageCount}/2</p>
+                <p><strong>Status:</strong> ${user.isPremium ? 'Premium ✅' : 'Free'}</p>
+            `;
+            document.getElementById('userActions').style.display = 'block';
+        }
+
+        // Manage user from table
+        function manageUser(userKey) {
+            const userData = JSON.parse(localStorage.getItem(userKey));
+            currentUserData = {
+                ...userData,
+                key: userKey
+            };
+            displayUserInfo(currentUserData);
+            document.getElementById('searchPhone').value = userData.phone || '';
+        }
+
+        // Upgrade user to premium
+        function upgradeUser() {
+            if (!currentUserData) return;
+
+            currentUserData.isPremium = true;
+            localStorage.setItem(currentUserDataData.key, JSON.stringify(currentUserData));
+
+            showNotification('✅ User upgraded to Premium!', 'success');
+            loadAllUsers();
+        }
+
+        // Reset user usage
+        function resetUserUsage() {
+            if (!currentUserData) return;
+
+            currentUserData.usageCount = 0;
+            localStorage.setItem(currentUserDataData.key, JSON.stringify(currentUserDataData));
+
+            showNotification('✅ User usage reset successfully!', 'success');
+            loadAllUsers();
+            displayUserInfo(currentUserData);
+        }
+
+        // Generate unlock code
+        function generateUnlockCode() {
+            const code = 'UGC' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('newCode').textContent = code;
+            document.getElementById('newCodeDisplay').style.display = 'block';
+        }
+
+        // Copy code to clipboard
+        function copyCode() {
+            const code = document.getElementById('newCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('✅ Code copied to clipboard!', 'success');
+            });
+        }
+
+        // Save settings
+        function saveSettings() {
+            const freeLimit = document.getElementById('freeLimit').value;
+            const upiId = document.getElementById('upiId').value;
+            const whatsappNumber = document.getElementById('whatsappNumber').value;
+
+            localStorage.setItem('ugc_ad_settings', JSON.stringify({
+                freeLimit,
+                upiId,
+                whatsappNumber
+            }));
+
+            showNotification('✅ Settings saved successfully!', 'success');
+        }
+
+        // Load settings
+        function loadSettings() {
+            const settings = localStorage.getItem('ugc_ad_settings');
+            if (settings) {
+                const parsed = JSON.parse(settings);
+                document.getElementById('freeLimit').value = parsed.freeLimit || 2;
+                document.getElementById('upiId').value = parsed.upiId || '8638556847-3@ybl';
+                document.getElementById('whatsappNumber').value = parsed.whatsappNumber || '919876543210';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize
+        if (checkAuth()) {
+            loadAllUsers();
+            loadSettings();
+        }
+    </script>
+</body>
+</html>
